@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!-- This file has been downloaded from Bootsnipp.com. Enjoy! -->
+    <title>GrowBone</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/src/external/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/src/external/css/bootstrap_button_dropdowns.css" rel="stylesheet">
+    <script src="/src/external/js/jquery-1.11.1.min.js"></script>
+    <script src="/src/external/js/bootstrap.min.js"></script>
+    <style type="text/css">
+    	.btn-face{
+    		width:100px;
+    	}
+    </style>
+    <!--<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!--<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>-->
+    <style type="text/css">
+    	#master{
+    		display: none;
+    	}
+    </style>
+    <script type="text/javascript">
+    var logNum = 0;
+    function mySend(myUrl){
+    	console.log(myUrl)
+    	$.ajax({
+				url: myUrl,
+				type: 'get',
+				dataType: 'JSON',
+				success: function(data) { myLog(JSON.stringify(data)); },
+				error: function(e) { console.log(e.message); }
+			});
+		initiateUpdate();
+    }
+    
+    function myLog(string){
+    	logNum = logNum + 1;
+    	$("#result").prepend(logNum.toString() + '   ' + string + '\n');
+    }
+    
+    function drawPage(data, textStatus, xhr){
+    	console.log(textStatus);
+    	myLog(JSON.stringify(data));
+    	var count = parseInt(data['data']['count']);
+    	for (var i = 0; i < count; i++){
+			var myPin = data['data'][i.toString()];
+			console.log('myPins - ' + JSON.stringify(myPin));
+			var $master = $('#master');
+			var newId = myPin['pin'];
+			var $klon = $master.clone().prop('id', newId);
+			
+		    $master.before($klon);
+		    $master.before("<br>");
+		    
+		    $('#' + newId + ' > button.btn-face' ).html(newId);
+		    $('#' + newId + ' > button.btn-face' ).click(function() {
+			    mySend('_do?cmd=toggleState&pin=' + $(this).parent().prop('id') );
+			});
+		    
+		}// end for
+    }
+    
+    function updatePage(data, textStatus, xhr){
+    	console.log(textStatus);
+    	myLog(JSON.stringify(data));
+    	var count = parseInt(data['data']['count']);
+    	for (var i = 0; i < count; i++){
+			var myPin = data['data'][i.toString()];
+			//console.log('myPins - ' + JSON.stringify(myPin));
+			var $master = $('#master');
+			var newId = myPin['pin'];
+			
+		    $('#' + newId + ' > button.dropdown-toggle' ).removeClass('btn-primary');
+		    $('#' + newId + ' > button.dropdown-toggle' ).removeClass('btn-success');
+		    $('#' + newId + ' > button.dropdown-toggle' ).removeClass('btn-danger');
+		    $('#' + newId + ' > button.dropdown-toggle' ).removeClass('btn-warning');
+		    console.log(myPin['state'] )
+		    if (myPin['state'] == 1){
+		    	$('#' + newId + ' > button.dropdown-toggle' ).addClass('btn-success');
+		    }else if (myPin['state'] == 0){    
+		        $('#' + newId + ' > button.dropdown-toggle' ).addClass('btn-danger');
+		    }else{
+		        $('#' + newId + ' > button.dropdown-toggle' ).addClass('btn-warning');
+		    }
+		    
+    	}
+    }
+    
+    function initiateUpdate(){
+    	$.ajax({
+			url: '_fetch?cmd=allPins',
+			type: 'get',
+			dataType: 'JSON',
+			success: updatePage,
+			error: function(e) {
+			   console.log(e.message);
+			}
+		});
+    }
+    
+    
+	$(document).ready(function(){
+    	$.ajax({
+			url: '_fetch?cmd=allPins',
+			type: 'get',
+			dataType: 'JSON',
+			success: drawPage,
+			error: function(e) {
+			    console.log(e.message);
+			}
+		});
+		
+		window.setInterval(initiateUpdate, 5000);
+	});
+    </script>
+</head>
+<body>
+<div role="main" class="container theme-showcase">
+
+  <div class="page-header">
+      <h1>GrowRoom Dashboard</h1>
+  </div>
+  <p>
+	</p>
+	
+  <div class="btn-group btn-group-primary" id="master">
+	  <button class="btn btn-primary btn-face" type="button">Primary</button>
+	  <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle" type="button"><span class="caret"></span>
+	  </button>
+	  <ul class="dropdown-menu">
+		  <li><a href="#">OUT 1</a></li>
+		  <li><a href="#">OUT 2</a></li>
+		  <li class="divider"></li>
+		  <li><a href="#">Separated link</a></li>
+	  </ul>
+  </div>
+  
+  <p>
+	</p>
+  <div id="pinContainer"></div>
+  <p>
+	</p>
+  <textarea id="result" style="width:600px; height:100px;"></textarea>
+  <img src="src/HEADERS.png"/>
+</body>
+</html>
