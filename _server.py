@@ -6,6 +6,32 @@ import socketserver
 import json
 import cgi
 
+import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_BBIO.ADC as ADC
+ADC.setup()
+
+myPins =   [
+            myScope("USR0",'o'),
+            myScope("USR1",'o'),
+            myScope("USR2",'o'),
+            myScope("USR3",'o'),
+            myScope("P8_8",'o'),
+            myScope("P8_10",'o'),
+            myScope("P8_11",'o'),
+            myScope("P8_12",'o'),
+            myScope("P8_13",'o'),
+            myScope("P9_14",'o'),
+            myScope("P8_15",'o'),
+            myScope("P8_16",'o'),
+            myScope("P8_17",'o'),
+            myScope("P8_18",'o'),
+            myScope("P9_41",'i'),
+            myScope("P9_42",'i'),
+            myScope("P9_39",'ai'),
+            myScope("P9_40",'ai'),
+            ]
+
+
 
 # start server
 def run(PORT=8081):
@@ -69,9 +95,6 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(json.dumps(message))
 
 
-import Adafruit_BBIO.GPIO as GPIO
-import Adafruit_BBIO.ADC as ADC
-ADC.setup()
                                       # ------------- PIN I/O handling
 class myScope:
     def __init__(self, pin , io):
@@ -151,29 +174,6 @@ def _fetch(argString):
         
         return data
     
-
-# ----- live code ----------------    
-
-myPins =   [
-            myScope("USR0",'o'),
-            myScope("USR1",'o'),
-            myScope("USR2",'o'),
-            myScope("USR3",'o'),
-            myScope("P8_8",'o'),
-            myScope("P8_10",'o'),
-            myScope("P8_11",'o'),
-            myScope("P8_12",'o'),
-            myScope("P8_13",'o'),
-            myScope("P9_14",'o'),
-            myScope("P8_15",'o'),
-            myScope("P8_16",'o'),
-            myScope("P8_17",'o'),
-            myScope("P8_18",'o'),
-            myScope("P9_41",'i'),
-            myScope("P9_42",'i'),
-            myScope("P9_39",'ai'),
-            myScope("P9_40",'ai'),
-            ]
 
 
 if __name__ == "__main__":
